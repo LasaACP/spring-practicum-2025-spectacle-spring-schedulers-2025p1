@@ -1,3 +1,7 @@
+# compiled stuff
 *.out
 *.exe
 *.gch
+
+# vscode config
+.vscode/*
