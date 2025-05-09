@@ -13,8 +13,9 @@ int main() {
 
     cout << "Welcome to the Spring Schedule Spectacle program!" << endl;
     string userInput;
+    char userInputFirstChar;
 
-    while (userInput[0] != 'E') {
+    while (userInputFirstChar != 'E') {
         cout << endl
                 << "What would you like to do?" << endl
                 << "- change file input: \"F\"" << endl
@@ -24,14 +25,19 @@ int main() {
         cout << "input... ";
         
         cin >> userInput;
+        if (userInput.length() == 0) {
+            userInputFirstChar = ' ';
+        } else {
+            userInputFirstChar = userInput[0] | 32;
+        }
 
-        if (userInput[0] == 'F') {
+        if (userInputFirstChar == 'F') {
             cout << endl << "pretend this works" << endl;
         }
-        else if (userInput[0] == 'T') {
+        else if (userInputFirstChar == 'T') {
             printTaskList(tasks);
         }
-        else if (userInput[0] == 'E') {
+        else if (userInputFirstChar == 'E') {
             cout << "Bye, have a nice day!" << endl;
             break;
         }
