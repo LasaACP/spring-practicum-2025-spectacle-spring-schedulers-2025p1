@@ -1,10 +1,19 @@
 #include <iostream>
+#include <iomanip>
+#include <iostream>
 #include "structures.h"
 #include "DataRead.h"
 
 using namespace std;
 #include <algorithm>
 bool compareTasks(const Task& a, const Task& b);
+void displaySchedule(const vector<Task>& tasks);
+bool compareTasks(const Task& a, const Task& b);
+void printTask(vector<Task> t);
+tm* getDate();
+tm addDaysToDate(const tm& date, int add);
+void formatDate(const tm& date, char* output, size_t size);
+void scheduleTasks(vector<Task>& tasks);
 
 void printTask(vector<Task> t) {
     for(Task task: t){
@@ -25,6 +34,7 @@ int main() {
     vector<Task> tasks = readTasks();
     sort(tasks.begin(), tasks.end(), compareTasks);
     printTask(tasks);
+    displaySchedule(tasks);
 
 }
 bool compareTasks(const Task& a, const Task& b) {
@@ -36,7 +46,7 @@ bool compareTasks(const Task& a, const Task& b) {
     return a.duration > b.duration; 
 }
 
-tm getDate(){
+tm* getDate() {
     time_t timestamp;
     char output[50];
     struct tm * datetime;
@@ -45,7 +55,6 @@ tm getDate(){
     return datetime;
 }
 
-
 tm addDaysToDate(const tm& date, int add) {
     tm newDate = date;
     newDate.tm_mday += add;
@@ -53,24 +62,21 @@ tm addDaysToDate(const tm& date, int add) {
     return newDate;
 }
 
-
 void formatDate(const tm& date, char* output, size_t size) {
     strftime(output, size, "%B %e, %Y", &date);
 }
 
-
-void displaySchedule(const vector<Task>& tasks){
+void displaySchedule(const vector<Task>& tasks) {
     vector<Task> sorted = tasks;
     sort(sorted.begin(), sorted.end(), compareTasks);
-
 
     cout << "Here's your generated schedule:\n";
     cout << setw(20) << left << "Task" << setw(15) << "Date" << "Assigned Users\n";
     cout << "--------------------------------------------------------\n";
    
-    for (const auto& task : sortedTasks) {
+    for (const auto& task : sorted) {
         cout << setw(20) << left << task.taskName
-             << setw(15) << left << task.date;
+             << setw(15) << left << task.date
              << "Users: ";
        
         for (const auto& user : task.users) {
@@ -81,14 +87,13 @@ void displaySchedule(const vector<Task>& tasks){
 }
 
 void scheduleTasks(vector<Task>& tasks) {
-    tm current = getDate();
-
+    tm* current = getDate(); 
 
     char output[50];
-    formatDate(current, output, sizeof(output));
+    formatDate(*current, output, sizeof(output)); 
     int add = 0;
     for (auto& task : tasks) {
-        tm scheduledDate = addDaysToDate(currentDate, add);
+        tm scheduledDate = addDaysToDate(*current, add); 
         formatDate(scheduledDate, output, sizeof(output));
         task.date = string(output);
         add++;
