@@ -18,7 +18,7 @@ int main() {
     string userInput;
     char userInputFirstChar;
 
-    while (userInputFirstChar != 'E') {
+    while (userInputFirstChar != 'e') {
         cout << endl
                 << "What would you like to do?" << endl
                 << "- change file input: \"F\"" << endl
@@ -34,13 +34,13 @@ int main() {
             userInputFirstChar = userInput[0] | 32;
         }
 
-        if (userInputFirstChar == 'F') {
+        if (userInputFirstChar == 'f') {
             cout << endl << "pretend this works" << endl;
         }
-        else if (userInputFirstChar == 'T') {
+        else if (userInputFirstChar == 't') {
             printTaskList(tasks);
         }
-        else if (userInputFirstChar == 'E') {
+        else if (userInputFirstChar == 'e') {
             cout << "Bye, have a nice day!" << endl;
             break;
         }
