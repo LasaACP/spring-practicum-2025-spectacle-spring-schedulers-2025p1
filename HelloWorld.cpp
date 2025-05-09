@@ -21,11 +21,41 @@ void printTask(vector<Task> t) {
 }
 
 int main() {
-    vector<User> userList = readUsers();
-    vector<Task> tasks = readTasks();
-    sort(tasks.begin(), tasks.end(), compareTasks);
-    printTask(tasks);
+    vector<User> userList = readUsers("users.csv");
+    vector<Task> tasks = readTasks("tasks.csv");
 
+    sort(tasks.begin(), tasks.end(), compareTasks);
+
+    cout << "Welcome to the Spring Schedule Spectacle program!" << endl;
+    string userInput;
+
+    while (userInput[0] != 'E') {
+        cout << endl
+                << "What would you like to do?" << endl
+                << "- change file input: \"F\"" << endl
+                << "- print task list: \"T\"" << endl
+                << "- exit program: \"E\"" << endl;
+
+        cout << "input... ";
+        
+        cin >> userInput;
+
+        if (userInput[0] == 'F') {
+            cout << endl << "pretend this works" << endl;
+        }
+        else if (userInput[0] == 'T') {
+            printTask(tasks);
+        }
+        else if (userInput[0] == 'E') {
+            cout << "Bye, have a nice day!" << endl;
+            break;
+        }
+        else {
+            cout << endl << "invalid input." << endl;
+        }
+    }
+    
+    return 0;
 }
 bool compareTasks(const Task& a, const Task& b) {
     int aPeople = a.users.size();
