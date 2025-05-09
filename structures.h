@@ -9,6 +9,7 @@ struct User{
 struct Task{
     std::string taskName;
     std::vector<std::string> users;
+    std::string date;
     int duration;
 };
 #endif
