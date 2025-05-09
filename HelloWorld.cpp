@@ -1,24 +1,9 @@
 #include <iostream>
+#include <algorithm>
 #include "structures.h"
 #include "DataRead.h"
 
 using namespace std;
-#include <algorithm>
-bool compareTasks(const Task& a, const Task& b);
-
-void printTask(vector<Task> t) {
-    for(Task task: t){
-    cout << "Task: " << task.taskName << "\n";
-    cout << "Users: ";
-    for (size_t i = 0; i < task.users.size(); ++i) {
-        cout << task.users[i];
-        if (i != task.users.size() - 1) {
-            cout << ", ";
-        }
-    }
-    cout << "\nDuration: " << task.duration << "\n";
-}
-}
 
 int main() {
     vector<User> userList = readUsers("users.csv");
@@ -44,7 +29,7 @@ int main() {
             cout << endl << "pretend this works" << endl;
         }
         else if (userInput[0] == 'T') {
-            printTask(tasks);
+            printTaskList(tasks);
         }
         else if (userInput[0] == 'E') {
             cout << "Bye, have a nice day!" << endl;
@@ -57,6 +42,21 @@ int main() {
     
     return 0;
 }
+
+void printTaskList(vector<Task> t) {
+    for (Task task : t) {
+        cout << "Task: " << task.taskName << "\n";
+        cout << "Users: ";
+        for (size_t i = 0; i < task.users.size(); ++i) {
+            cout << task.users[i];
+            if (i != task.users.size() - 1) {
+                cout << ", ";
+            }
+        }
+        cout << "\nDuration: " << task.duration << "\n";
+    }
+}
+
 bool compareTasks(const Task& a, const Task& b) {
     int aPeople = a.users.size();
     int bPeople = b.users.size();
@@ -66,6 +66,7 @@ bool compareTasks(const Task& a, const Task& b) {
     return a.duration > b.duration; 
 }
 
+
 tm getDate(){
     time_t timestamp;
     char output[50];
@@ -74,6 +75,7 @@ tm getDate(){
     datetime = localtime(&timestamp);
     return datetime;
 }
+
 
 
 tm addDaysToDate(const tm& date, int add) {
