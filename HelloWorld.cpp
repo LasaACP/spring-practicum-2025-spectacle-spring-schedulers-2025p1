@@ -5,13 +5,13 @@ using namespace std;
 
 int main() {
     vector<User> userList = readUsers();
-    vector<Task> tasks;
+    vector<Task> tasks = readTasks();
 }
 
 bool compareTasks(const Task& a, const Task& b) {
     int aPeople = a.users.size();
     int bPeople = b.users.size();
-    
+
     return aPeople > bPeople;
 }
 

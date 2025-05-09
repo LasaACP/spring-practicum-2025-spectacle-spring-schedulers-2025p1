@@ -17,6 +17,7 @@ Task formatTask(string toFormat) {
         // reading name
         if (commaIndex == 0) {
             task.taskName += toFormat[i];
+            continue;
         }
         // reading users
         if (commaIndex == 1) {
@@ -27,10 +28,12 @@ Task formatTask(string toFormat) {
                 continue;
             }
             readBuffer += toFormat[i];
+            continue;
         }
         // reading duration
         if (commaIndex == 2) {
             readBuffer += toFormat[i];
+            continue;
         }
     }
     task.duration = stoi(readBuffer);
@@ -86,6 +89,8 @@ vector<Task> readTasks() {
     int taskCount = 0;
 
     while (getline(taskInput,currentLine)) {
+        taskCount++;
+        if (taskCount == 1) continue; // skip first line
         tasks.emplace_back(formatTask(currentLine));
     }
 
@@ -98,9 +103,11 @@ vector<User> readUsers() {
     vector<User> users;
 
     string currentLine;
-    int taskCount = 0;
+    int userCount = 0;
 
     while (getline(userInput,currentLine)) {
+        userCount++;
+        if (userCount == 1) continue; // skip first line
         users.emplace_back(formatUser(currentLine));
     }
 
