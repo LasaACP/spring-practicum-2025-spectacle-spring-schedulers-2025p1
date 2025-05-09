@@ -10,18 +10,62 @@
 using namespace std;
 bool compareTasks(const Task& a, const Task& b);
 
-void printTask(vector<Task> t) {
-    for(Task task: t){
-    cout << "Task: " << task.taskName << "\n";
-    cout << "Users: ";
-    for (size_t i = 0; i < task.users.size(); ++i) {
-        cout << task.users[i];
-        if (i != task.users.size() - 1) {
-            cout << ", ";
+int main() {
+    vector<User> userList = readUsers("users.csv");
+    vector<Task> tasks = readTasks("tasks.csv");
+
+    sort(tasks.begin(), tasks.end(), compareTasks);
+
+    cout << "Welcome to the Spring Schedule Spectacle program!" << endl;
+    string userInput;
+    char userInputFirstChar;
+
+    while (userInputFirstChar != 'E') {
+        cout << endl
+                << "What would you like to do?" << endl
+                << "- change file input: \"F\"" << endl
+                << "- print task list: \"T\"" << endl
+                << "- exit program: \"E\"" << endl;
+
+        cout << "input... ";
+        
+        cin >> userInput;
+        if (userInput.length() == 0) {
+            userInputFirstChar = ' ';
+        } else {
+            userInputFirstChar = userInput[0] | 32;
+        }
+
+        if (userInputFirstChar == 'F') {
+            cout << endl << "pretend this works" << endl;
+        }
+        else if (userInputFirstChar == 'T') {
+            printTaskList(tasks);
+        }
+        else if (userInputFirstChar == 'E') {
+            cout << "Bye, have a nice day!" << endl;
+            break;
+        }
+        else {
+            cout << endl << "invalid input." << endl;
         }
     }
-    cout << "\nDuration: " << task.duration << "\n";
+    
+    return 0;
 }
+
+void printTaskList(vector<Task> t) {
+    for (Task task : t) {
+        cout << "Task: " << task.taskName << "\n";
+        cout << "Users: ";
+        for (size_t i = 0; i < task.users.size(); ++i) {
+            cout << task.users[i];
+            if (i != task.users.size() - 1) {
+                cout << ", ";
+            }
+        }
+        cout << "\nDuration: " << task.duration << "\n";
+    }
 }
 
 int main() {
