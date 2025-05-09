@@ -81,8 +81,8 @@ User formatUser(string toFormat) {
     return user;
 }
 
-vector<Task> readTasks() {
-    ifstream taskInput ("tasks.csv");
+vector<Task> readTasks(string inputFile) {
+    ifstream taskInput (inputFile);
     vector<Task> tasks;
 
     string currentLine;
@@ -98,8 +98,8 @@ vector<Task> readTasks() {
     return tasks;
 }
 
-vector<User> readUsers() {
-    ifstream userInput ("users.csv");
+vector<User> readUsers(string inputFile) {
+    ifstream userInput (inputFile);
     vector<User> users;
 
     string currentLine;

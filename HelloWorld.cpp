@@ -1,19 +1,14 @@
 #include <iostream>
 #include <iomanip>
 #include <iostream>
+#include <iomanip>
+#include <iostream>
+#include <algorithm>
 #include "structures.h"
 #include "DataRead.h"
 
 using namespace std;
-#include <algorithm>
 bool compareTasks(const Task& a, const Task& b);
-void displaySchedule(const vector<Task>& tasks);
-bool compareTasks(const Task& a, const Task& b);
-void printTask(vector<Task> t);
-tm* getDate();
-tm addDaysToDate(const tm& date, int add);
-void formatDate(const tm& date, char* output, size_t size);
-void scheduleTasks(vector<Task>& tasks);
 
 void printTask(vector<Task> t) {
     for(Task task: t){
@@ -34,7 +29,6 @@ int main() {
     vector<Task> tasks = readTasks();
     sort(tasks.begin(), tasks.end(), compareTasks);
     printTask(tasks);
-    displaySchedule(tasks);
 
 }
 bool compareTasks(const Task& a, const Task& b) {
@@ -46,6 +40,7 @@ bool compareTasks(const Task& a, const Task& b) {
     return a.duration > b.duration; 
 }
 
+
 tm* getDate() {
     time_t timestamp;
     char output[50];
@@ -54,6 +49,7 @@ tm* getDate() {
     datetime = localtime(&timestamp);
     return datetime;
 }
+
 
 tm addDaysToDate(const tm& date, int add) {
     tm newDate = date;
