@@ -1,6 +1,3 @@
-#include <iostream>
-#include <iomanip>
-#include <iostream>
 #include <iomanip>
 #include <iostream>
 #include <algorithm>
@@ -9,6 +6,7 @@
 
 using namespace std;
 bool compareTasks(const Task& a, const Task& b);
+void printTaskList(vector<Task> t);
 
 int main() {
     vector<User> userList = readUsers("users.csv");
@@ -68,13 +66,6 @@ void printTaskList(vector<Task> t) {
     }
 }
 
-int main() {
-    vector<User> userList = readUsers();
-    vector<Task> tasks = readTasks();
-    sort(tasks.begin(), tasks.end(), compareTasks);
-    printTask(tasks);
-
-}
 bool compareTasks(const Task& a, const Task& b) {
     int aPeople = a.users.size();
     int bPeople = b.users.size();
