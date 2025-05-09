@@ -80,3 +80,17 @@ void displaySchedule(const vector<Task>& tasks){
     }
 }
 
+void scheduleTasks(vector<Task>& tasks) {
+    tm current = getDate();
+
+
+    char output[50];
+    formatDate(current, output, sizeof(output));
+    int add = 0;
+    for (auto& task : tasks) {
+        tm scheduledDate = addDaysToDate(currentDate, add);
+        formatDate(scheduledDate, output, sizeof(output));
+        task.date = string(output);
+        add++;
+    }
+}
