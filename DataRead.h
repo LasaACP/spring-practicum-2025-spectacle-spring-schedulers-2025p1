@@ -6,3 +6,5 @@ User formatUser(string);
 
 vector<Task> readTasks(string);
 vector<User> readUsers(string);
+
+bool fileExists(string);

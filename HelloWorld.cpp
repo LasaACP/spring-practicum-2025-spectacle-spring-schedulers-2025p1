@@ -21,21 +21,41 @@ int main() {
     while (userInputFirstChar != 'e') {
         cout << endl
                 << "What would you like to do?" << endl
-                << "- change file input: \"F\"" << endl
+                << "- change user file: \"U [filename]\"" << endl
+                << "- change task file: \"F [filename]\"" << endl
                 << "- print task list: \"T\"" << endl
                 << "- exit program: \"E\"" << endl;
 
         cout << "input... ";
         
-        cin >> userInput;
+        getline(cin, userInput);
         if (userInput.length() == 0) {
             userInputFirstChar = ' ';
         } else {
             userInputFirstChar = userInput[0] | 32;
         }
 
-        if (userInputFirstChar == 'f') {
-            cout << endl << "pretend this works" << endl;
+        if (userInputFirstChar == 'f' || userInputFirstChar == 'u') {
+            int fileNameIndex = userInput.find(' ');
+            string fileName = userInput.substr(fileNameIndex+1);
+
+            if (fileExists(fileName)) {
+                cout << endl << "working... if something goes wrong, you've likely formatted the file wrong";
+                if (userInputFirstChar == 'f') {
+                    tasks = readTasks(fileName);
+                    cout << endl << "updated tasks successfully!" << endl;
+                } else if (userInputFirstChar == 'u') {
+                    userList = readUsers(fileName);
+                    cout << endl << "updated users successfully!" << endl;
+                }
+            } else {
+                if (fileName == userInput || fileName == "") {
+                    cout << endl << "please input a file." << endl;
+                } else {
+                    cout << endl << "file \"" << fileName << "\" doesn't exist." << endl;
+                }
+            }
+            
         }
         else if (userInputFirstChar == 't') {
             printTaskList(tasks);
