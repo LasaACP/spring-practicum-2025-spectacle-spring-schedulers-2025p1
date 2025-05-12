@@ -7,6 +7,8 @@
 using namespace std;
 bool compareTasks(const Task& a, const Task& b);
 void printTaskList(vector<Task> t);
+void displaySchedule(const vector<Task>& tasks);
+void scheduleTasks(vector<Task>& tasks);
 
 int main() {
     vector<User> userList = readUsers("users.csv");
@@ -38,7 +40,8 @@ int main() {
             cout << endl << "pretend this works" << endl;
         }
         else if (userInputFirstChar == 't') {
-            printTaskList(tasks);
+            scheduleTasks(tasks);
+            displaySchedule(tasks);
         }
         else if (userInputFirstChar == 'e') {
             cout << "Bye, have a nice day!" << endl;
@@ -50,20 +53,6 @@ int main() {
     }
     
     return 0;
-}
-
-void printTaskList(vector<Task> t) {
-    for (Task task : t) {
-        cout << "Task: " << task.taskName << "\n";
-        cout << "Users: ";
-        for (size_t i = 0; i < task.users.size(); ++i) {
-            cout << task.users[i];
-            if (i != task.users.size() - 1) {
-                cout << ", ";
-            }
-        }
-        cout << "\nDuration: " << task.duration << "\n";
-    }
 }
 
 bool compareTasks(const Task& a, const Task& b) {
@@ -102,12 +91,13 @@ void displaySchedule(const vector<Task>& tasks) {
     sort(sorted.begin(), sorted.end(), compareTasks);
 
     cout << "Here's your generated schedule:\n";
-    cout << setw(20) << left << "Task" << setw(15) << "Date" << "Assigned Users\n";
+    cout << setw(20) << left << "Task" << setw(15) << "Date" << setw(15) << "Duration" << "Assigned Users\n";
     cout << "--------------------------------------------------------\n";
    
     for (const auto& task : sorted) {
         cout << setw(20) << left << task.taskName
              << setw(15) << left << task.date
+             << setw(15) << left << task.duration
              << "Users: ";
        
         for (const auto& user : task.users) {
