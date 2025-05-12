@@ -111,13 +111,14 @@ void displaySchedule(const vector<Task>& tasks) {
     sort(sorted.begin(), sorted.end(), compareTasks);
 
     cout << "Here's your generated schedule:\n";
-    cout << setw(20) << left << "Task" << setw(15) << "Date" << setw(15) << "Duration" << "Assigned Users\n";
+    cout << setw(20) << left << "Task" << setw(15) << "Date" << setw(15) << "Time Block" << "Assigned Users\n";
     cout << "--------------------------------------------------------\n";
    
     for (const auto& task : sorted) {
+        string timeBlock = task.startTime + " - " + task.endTime;
         cout << setw(20) << left << task.taskName
              << setw(15) << left << task.date
-             << setw(15) << left << task.duration
+             << setw(16) << left << timeBlock
              << "Users: ";
        
         for (const auto& user : task.users) {
@@ -129,14 +130,44 @@ void displaySchedule(const vector<Task>& tasks) {
 
 void scheduleTasks(vector<Task>& tasks) {
     tm* current = getDate(); 
-
     char output[50];
-    formatDate(*current, output, sizeof(output)); 
+    vector<TimeSlot> slots(8); 
     int add = 0;
+    formatDate(*current, output, sizeof(output)); 
+
     for (auto& task : tasks) {
-        tm scheduledDate = addDaysToDate(*current, add); 
-        formatDate(scheduledDate, output, sizeof(output));
-        task.date = string(output);
-        add++;
+        tm scheduledDate = addDaysToDate(*current, add);
+        vector<bool> occupied(8, false);
+
+        bool scheduled = false;
+        for (int i = 0; i <= 8 - task.duration; ++i) {
+            
+            bool blockFree = true;
+            for (int j = 0; j < task.duration; ++j) {
+                if (occupied[i + j]) {
+                    blockFree = false;
+                    break;
+                }
+            }
+            if (blockFree) {
+                for (int j = 0; j < task.duration; ++j) {
+                    occupied[i + j] = true;
+                }
+                int startHour = 9 + i;
+                int endHour = startHour + task.duration;
+                char buffer[50];
+                
+                strftime(buffer, sizeof(buffer), "%B %e, %Y", &scheduledDate);
+                task.date = string(buffer);
+                task.startTime = to_string(startHour) + ":00";
+                task.endTime = to_string(endHour) + ":00";
+                scheduled = true;
+                break;
+            }
+        }
+        if (!scheduled) {
+            ++add;
+        }
     }
+    
 }
