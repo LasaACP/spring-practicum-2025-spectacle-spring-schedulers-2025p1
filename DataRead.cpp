@@ -45,7 +45,6 @@ User formatUser(string toFormat) {
     User user;
     int commaIndex = 0;
     string readBuffer;
-    
     vector<int> hoursBuffer;
 
     for (int i = 0; i < toFormat.length(); i++) {
@@ -53,11 +52,11 @@ User formatUser(string toFormat) {
             commaIndex++;
             continue;
         }
-        // reading username
+
         if (commaIndex == 0) {
             user.userName += toFormat[i];
         }
-        // reading availability
+
         if (commaIndex == 1) {
             if (toFormat[i] == '{') {
                 hoursBuffer.clear();
@@ -65,6 +64,8 @@ User formatUser(string toFormat) {
             }
 
             if (toFormat[i] == '}') {
+                hoursBuffer.push_back(stoi(readBuffer)); // <-- Push final number
+                readBuffer = "";
                 user.hours.push_back(hoursBuffer);
                 continue;
             }
