@@ -8,9 +8,6 @@
 using namespace std;
 bool compareTasks(const Task& a, const Task& b);
 void printTaskList(vector<Task> t);
-void displaySchedule(const vector<Task>& tasks);
-void scheduleTasks(vector<Task>& tasks, unordered_map<string, User>& userMap);
-
 
 int main() {
     vector<User> userList = readUsers("users.csv");
@@ -29,26 +26,44 @@ int main() {
     while (userInputFirstChar != 'e') {
         cout << endl
                 << "What would you like to do?" << endl
-                << "- change file input: \"F\"" << endl
+                << "- change user file: \"U [filename]\"" << endl
+                << "- change task file: \"F [filename]\"" << endl
                 << "- print task list: \"T\"" << endl
                 << "- exit program: \"E\"" << endl;
 
         cout << "input... ";
         
-        cin >> userInput;
+        getline(cin, userInput);
         if (userInput.length() == 0) {
             userInputFirstChar = ' ';
         } else {
             userInputFirstChar = userInput[0] | 32;
         }
 
-        if (userInputFirstChar == 'f') {
-            cout << endl << "pretend this works" << endl;
+        if (userInputFirstChar == 'f' || userInputFirstChar == 'u') {
+            int fileNameIndex = userInput.find(' ');
+            string fileName = userInput.substr(fileNameIndex+1);
+
+            if (fileExists(fileName)) {
+                cout << endl << "working... if something goes wrong, you've likely formatted the file wrong";
+                if (userInputFirstChar == 'f') {
+                    tasks = readTasks(fileName);
+                    cout << endl << "updated tasks successfully!" << endl;
+                } else if (userInputFirstChar == 'u') {
+                    userList = readUsers(fileName);
+                    cout << endl << "updated users successfully!" << endl;
+                }
+            } else {
+                if (fileName == userInput || fileName == "") {
+                    cout << endl << "please input a file." << endl;
+                } else {
+                    cout << endl << "file \"" << fileName << "\" doesn't exist." << endl;
+                }
+            }
+            
         }
         else if (userInputFirstChar == 't') {
             printTaskList(tasks);
-            scheduleTasks(tasks, userMap);
-            displaySchedule(tasks);
         }
         else if (userInputFirstChar == 'e') {
             cout << "Bye, have a nice day!" << endl;
@@ -59,20 +74,6 @@ int main() {
         }
     }
     return 0;
-}
-
-void printTaskList(vector<Task> t) {
-    for (Task task : t) {
-        cout << "Task: " << task.taskName << "\n";
-        cout << "Users: ";
-        for (size_t i = 0; i < task.users.size(); ++i) {
-            cout << task.users[i];
-            if (i != task.users.size() - 1) {
-                cout << ", ";
-            }
-        }
-        cout << "\nDuration: " << task.duration << "\n";
-    }
 }
 
 bool compareTasks(const Task& a, const Task& b) {
@@ -111,13 +112,14 @@ void displaySchedule(const vector<Task>& tasks) {
     sort(sorted.begin(), sorted.end(), compareTasks);
 
     cout << "Here's your generated schedule:\n";
-    cout << setw(20) << left << "Task" << setw(15) << "Date" << "          " << "Assigned Users\n";
+    cout << setw(20) << left << "Task" << setw(15) << "Date" << "Assigned Users\n";
     cout << "--------------------------------------------------------\n";
    
     for (const auto& task : sorted) {
+        string timeBlock = task.startTime + " - " + task.endTime;
         cout << setw(20) << left << task.taskName
              << setw(15) << left << task.date
-             << "  Users: ";
+             << "Users: ";
        
         for (const auto& user : task.users) {
             cout << user << " ";
@@ -131,71 +133,12 @@ void scheduleTasks(vector<Task>& tasks, unordered_map<string, User>& userMap) {
 
     tm* current = getDate(); 
     char output[50];
-
+    formatDate(*current, output, sizeof(output)); 
+    int add = 0;
     for (auto& task : tasks) {
-        bool scheduled = false;
-
-        for (int i = 0; i < 30 && !scheduled; i++) {
-            tm testDate = addDaysToDate(*current, i);
-
-            for (int hour = 1; hour <= 24 - task.duration + 1 && !scheduled; hour++) {
-                bool allAvailable = true;
-
-                for (const string& userName : task.users) {
-                    auto it = userMap.find(userName);
-                    if (it == userMap.end()) {
-                        allAvailable = false;
-                        break;
-                    }
-
-                    const vector<vector<int>>& availability = it->second.hours;
-                    bool userAvailable = false;
-
-                    for (const auto& interval : availability) {
-                        if (interval.size() == 2 && interval[0] <= hour && hour + task.duration - 1 <= interval[1]) {
-                            userAvailable = true;
-                            break;
-                        }
-                    }
-
-                    if (!userAvailable) {
-                        allAvailable = false;
-                        break;
-                    }
-                }
-
-                if (allAvailable) {
-                    formatDate(testDate, output, sizeof(output));
-                    task.date = string(output) + " @ hour " + to_string(hour);
-                    scheduled = true;
-
-                    for (const string& userName : task.users) {
-                        auto& user = userMap[userName];  
-                        vector<vector<int>>& availability = user.hours;
-
-                        vector<vector<int>> newAvailability;
-                        for (const auto& interval : availability) {
-                            if (interval.size() != 2) continue;
-                            int start = interval[0], end = interval[1];
-
-                            if (start <= hour && hour + task.duration - 1 <= end) {
-                                if (start < hour)
-                                    newAvailability.push_back({start, hour - 1});
-                                if (hour + task.duration <= end)
-                                    newAvailability.push_back({hour + task.duration, end});
-                            } else {
-                                newAvailability.push_back(interval);  
-                            }
-                        }
-
-                        availability = newAvailability;
-                    }
-                }
-            }
-        }
-
-        if (!scheduled) {
-            task.date = "Not Scheduled";
-        }
+        tm scheduledDate = addDaysToDate(*current, add); 
+        formatDate(scheduledDate, output, sizeof(output));
+        task.date = string(output);
+        add++;
     }
-} 
+}

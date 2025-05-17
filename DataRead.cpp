@@ -115,3 +115,10 @@ vector<User> readUsers(string inputFile) {
     userInput.close();
     return users;
 }
+
+bool fileExists(string inputFile) {
+    ifstream file (inputFile);
+    bool exists = file.is_open();
+    file.close();
+    return exists;
+}
