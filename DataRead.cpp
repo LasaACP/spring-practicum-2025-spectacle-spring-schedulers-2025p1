@@ -47,15 +47,18 @@ User formatUser(string toFormat) {
     string readBuffer;
     vector<int> hoursBuffer;
 
+
     for (int i = 0; i < toFormat.length(); i++) {
         if (toFormat[i] == ',') {
             commaIndex++;
             continue;
         }
 
+
         if (commaIndex == 0) {
             user.userName += toFormat[i];
         }
+
 
         if (commaIndex == 1) {
             if (toFormat[i] == '{') {
@@ -63,12 +66,14 @@ User formatUser(string toFormat) {
                 continue;
             }
 
+
             if (toFormat[i] == '}') {
                 hoursBuffer.push_back(stoi(readBuffer)); // <-- Push final number
                 readBuffer = "";
                 user.hours.push_back(hoursBuffer);
                 continue;
             }
+
 
             if (toFormat[i] == ';') {
                 hoursBuffer.push_back(stoi(readBuffer));
@@ -79,8 +84,10 @@ User formatUser(string toFormat) {
         }
     }
 
+
     return user;
 }
+
 
 vector<Task> readTasks(string inputFile) {
     ifstream taskInput (inputFile);
