@@ -31,7 +31,12 @@ bool compareByDurationDesc(const Task& a, const Task& b) {
 static string formatHour(int hour24) {
     int h = hour24 % 12;
     if (h == 0) h = 12;
-    string suffix = (hour24 < 12) ? "AM" : "PM";
+    string suffix;
+    if (hour24 < 12) {
+        suffix = "AM";
+    } else {
+        suffix = "PM";
+    }
     return to_string(h) + ":00 " + suffix;
 }
 
@@ -52,8 +57,10 @@ tm addDaysToDate(const tm& date, int add) {
     return newDate;
 }
 
-void formatDate(const tm& date, char* output, size_t size) {
-    strftime(output, size, "%B %e, %Y", &date);
+string formatDate(const tm& date) {
+    char output[50];
+    strftime(output, sizeof(output), "%B %e, %Y", &date);
+    return string(output);
 }
 
 void displaySchedule(const vector<Task>& tasks) {
@@ -73,70 +80,83 @@ void displaySchedule(const vector<Task>& tasks) {
     }
 }
 
+bool isFree(const User& user, int hour, int duration) {
+    for (const auto& interval : user.hours) {
+        if (hour + duration <= interval[1] &&
+            interval[0] <= hour) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool areAllUsersFree(const vector<string>& users, unordered_map<string, User>& userMap, int hour, int duration) {
+    for (const auto& name : users) {
+        auto it = userMap.find(name);
+        if (it == userMap.end() || !isFree(it->second, hour, duration)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void reserveTime(const vector<string>& users, unordered_map<string, User>& userMap, int hour, int duration) {
+    for (const auto& uname : users) {
+        auto& i = userMap[uname].hours;
+        vector<vector<int>> u;
+
+        for (const auto& interval : i) {
+            int start = interval[0];
+            int end = interval[1];
+
+            if (start <= hour && hour + duration - 1 <= end) {
+                if (start < hour)
+                    u.push_back({start, hour - 1});
+                if (hour + duration <= end)
+                    u.push_back({hour + duration, end});
+            } else {
+                u.push_back(interval);
+            }
+        }
+
+        i = u;
+    }
+}
+
 void scheduleTasks(
     vector<Task>& tasks,
     unordered_map<string, User>& userMap,
     function<bool(const Task&, const Task&)> cmp
 ) {
     sort(tasks.begin(), tasks.end(), cmp);
-
     tm* current = getDate();
-    char dateBuf[50];
 
     for (auto& task : tasks) {
         bool scheduled = false;
+
         for (int dayOffset = 0; dayOffset < 30 && !scheduled; ++dayOffset) {
             tm testDate = addDaysToDate(*current, dayOffset);
+
             for (int hour = 1; hour <= 24 - task.duration + 1 && !scheduled; ++hour) {
-                // check every user’s availability
-                bool allFree = true;
-                for (auto& uname : task.users) {
-                    auto it = userMap.find(uname);
-                    if (it == userMap.end()) { allFree = false; break; }
-                    bool freeThisSlot = false;
-                    for (auto& iv : it->second.hours) {
-                        if (iv.size()==2 &&
-                            iv[0] <= hour &&
-                            hour + task.duration <= iv[1]
-                        ) { freeThisSlot = true; break; }
-                    }
-                    if (!freeThisSlot) { allFree = false; break; }
-                }
-                if (!allFree) continue;
+                if (!areAllUsersFree(task.users, userMap, hour, task.duration))
+                    continue;
 
-                // everyone is free
-                strftime(dateBuf, sizeof(dateBuf), "%B %e, %Y", &testDate);
-                task.date       = string(dateBuf);
-                task.startTime  = formatHour(hour);
-                task.endTime    = formatHour(hour + task.duration);
+                task.date      = formatDate(testDate);
+                task.startTime = formatHour(hour);
+                task.endTime   = formatHour(hour + task.duration);
 
-                // carve that block out of each user availability
-                for (auto& uname : task.users) {
-                    auto& avail = userMap[uname].hours;
-                    vector<vector<int>> next;
-                    for (auto& iv : avail) {
-                        int s = iv[0], e = iv[1];
-                        if (s <= hour && hour + task.duration - 1 <= e) {
-                            if (s < hour)
-                                next.push_back({s, hour - 1});
-                            if (hour + task.duration <= e)
-                                next.push_back({hour + task.duration, e});
-                        } else {
-                            next.push_back(iv);
-                        }
-                    }
-                    swap(avail, next);
-                }
-
+                reserveTime(task.users, userMap, hour, task.duration);
                 scheduled = true;
             }
         }
+
         if (!scheduled) {
-            task.date      = "Not Scheduled";
+            task.date = "Not Scheduled";
             task.startTime = task.endTime = "";
         }
     }
 }
+
 
 int main() {
     vector<User> userList = readUsers("users.csv");
