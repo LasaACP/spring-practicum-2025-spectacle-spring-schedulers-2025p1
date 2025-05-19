@@ -216,44 +216,34 @@ int main() {
     vector<User> userList = readUsers("users.csv");
     vector<Task> tasks = readTasks("tasks.csv");
     vector<vector<Task>> tasksByDay(31);
-    for (const auto& task : tasks) {
-        tasksByDay[task.day-1].push_back(task);
+
+    for (const auto &task : tasks)
+    {
+        tasksByDay[task.day - 1].push_back(task);
     }
     unordered_map<string, User> userMap;
-    for (const auto& user : userList) {
-    userMap[user.userName] = user;
+    for (const auto &user : userList)
+    {
+        userMap[user.userName] = user;
     }
     unordered_map<string, vector<vector<int>>> userOriginalHours;
-    for (const auto& user : userList) {
-    userOriginalHours[user.userName] = user.hours; 
-}
+    for (const auto &user : userList)
+    {
+        userOriginalHours[user.userName] = user.hours;
+    }
 
     cout << "Welcome to the Spring Schedule Spectacle program!" << endl;
     string userInput;
     char userInputFirstChar;
 
-    cout << "Choose optimization method:\n"
-         << "  1) By most participants per task\n"
-         << "  2) By shortest tasks first\n"
-         << "  3) By longest tasks first\n"
-         << "Enter 1, 2 or 3: ";
-    int choice;
-    cin  >> choice;
-    cin.ignore();
-
-    function<bool(const Task&, const Task&)> comparator;
-    switch (choice) {
-        case 2: comparator = compareByDurationAsc;  break;
-        case 3: comparator = compareByDurationDesc; break;
-        case 1:
-        default: comparator = compareByUserCount;   break;
-    }
+    function<bool(const Task&, const Task&)> comparator = compareByUserCount;
 
     while (userInputFirstChar != 'e') {
         cout << endl
                 << "What would you like to do?" << endl
                 << "- change user file: \"U [filename]\"" << endl
                 << "- change task file: \"F [filename]\"" << endl
+                << "- change priority method: \"P [option]\"" << endl
                 << "- print task list: \"T\"" << endl
                 << "- exit program: \"E\"" << endl;
 
@@ -287,6 +277,34 @@ int main() {
                 }
             }
             
+        }
+        else if (userInputFirstChar == 'p') {
+            int optIndex = userInput.find(' ');
+            string optionStr = userInput.substr(optIndex+1);
+
+            if (optionStr == userInput || optionStr == "") {
+                cout << endl
+                        << "please input an option. available options:" << endl
+                        << "highest participants first: \"P\"" << endl
+                        << "lowest task duration first: \"L\"" << endl
+                        << "highest task duration first: \"H\"" << endl;
+            } else {
+                switch (optionStr[0] | 32) {
+                    case 'p':
+                        comparator = compareByUserCount;
+                        break;
+                    case 'l':
+                        comparator = compareByDurationAsc;
+                        break;
+                    case 'h':
+                        comparator = compareByDurationDesc;
+                        break;
+
+                    default:
+                        cout << endl << "invalid option." << endl;
+                        break;
+                }
+            }
         }
         else if (userInputFirstChar == 't') {
             scheduleTasksByDay(tasksByDay, userMap, comparator, userOriginalHours);
