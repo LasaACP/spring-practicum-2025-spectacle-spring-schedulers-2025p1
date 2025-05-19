@@ -135,40 +135,6 @@ void reserveTime(const vector<string>& users, unordered_map<string, User>& userM
     }
 }
 
-// void scheduleTasks(
-//     vector<Task>& tasks,
-//     unordered_map<string, User>& userMap,
-//     function<bool(const Task&, const Task&)> cmp
-// ) {
-//     sort(tasks.begin(), tasks.end(), cmp);
-//     tm* current = getDate();
-
-//     for (auto& task : tasks) {
-//         bool scheduled = false;
-
-//         for (int dayOffset = 0; dayOffset < 30 && !scheduled; ++dayOffset) {
-//             tm testDate = addDaysToDate(*current, dayOffset);
-
-//             for (int hour = 1; hour <= 24 - task.duration + 1 && !scheduled; ++hour) {
-//                 if (!areAllUsersFree(task.users, userMap, hour, task.duration))
-//                     continue;
-
-//                 task.date      = formatDate(testDate);
-//                 task.startTime = formatHour(hour);
-//                 task.endTime   = formatHour(hour + task.duration);
-
-//                 reserveTime(task.users, userMap, hour, task.duration);
-//                 scheduled = true;
-//             }
-//         }
-
-//         if (!scheduled) {
-//             task.date = "Not Scheduled";
-//             task.startTime = task.endTime = "";
-//         }
-//     }
-// }
-
 void scheduleTasksByDay(
     vector<vector<Task>>& tasksByDay,
     unordered_map<string, User>& userMap,
