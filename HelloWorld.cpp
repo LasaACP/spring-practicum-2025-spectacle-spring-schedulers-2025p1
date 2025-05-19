@@ -237,7 +237,7 @@ int main() {
          << "Enter 1, 2 or 3: ";
     int choice;
     cin  >> choice;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin.ignore();
 
     function<bool(const Task&, const Task&)> comparator;
     switch (choice) {
