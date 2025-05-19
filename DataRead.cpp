@@ -14,32 +14,41 @@ Task formatTask(string toFormat) {
             commaIndex++;
             continue;
         }
-        // reading name
+
+        // Task name
         if (commaIndex == 0) {
             task.taskName += toFormat[i];
-            continue;
         }
-        // reading users
-        if (commaIndex == 1) {
+
+        // Users
+        else if (commaIndex == 1) {
             if (toFormat[i] == '{') continue;
             if (toFormat[i] == '}' || toFormat[i] == ';') {
                 task.users.push_back(readBuffer);
                 readBuffer = "";
-                continue;
+            } else {
+                readBuffer += toFormat[i];
             }
-            readBuffer += toFormat[i];
-            continue;
         }
-        // reading duration
-        if (commaIndex == 2) {
+
+        // Duration
+        else if (commaIndex == 2) {
             readBuffer += toFormat[i];
-            continue;
+        }
+
+        // Day
+        else if (commaIndex == 3) {
+            task.duration = stoi(readBuffer);
+            readBuffer = "";
+            readBuffer += toFormat[i];  // collect day number
         }
     }
-    task.duration = stoi(readBuffer);
+
+    task.day = stoi(readBuffer);  // readBuffer now contains day (e.g., "3")
 
     return task;
 }
+
 
 User formatUser(string toFormat) {
     User user;

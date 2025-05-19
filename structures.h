@@ -13,6 +13,7 @@ struct Task{
     std::string startTime;
     std::string endTime;
     int duration;
+    int day = -1;
 };
 struct TimeSlot{
     int hours;

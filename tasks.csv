@@ -1,4 +1,5 @@
-task,names,hours
-wash dishes,{josh},1
-destroy shed,{joe},2
-build new shed,{joe;josh},4
+task,names,hours,day
+wash dishes,{josh},1,1
+destroy shed,{joe},2,1
+build new shed,{joe;josh},2,2
+laundry,{joe;josh},2,2
